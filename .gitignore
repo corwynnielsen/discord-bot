@@ -1,0 +1,8 @@
+#Editor
+.vscode
+
+#Environment
+venv
+
+#Assets
+audio
