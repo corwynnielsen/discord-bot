@@ -2,11 +2,11 @@ import discord
 from discord.ext import commands
 import json
 
-# Constants]
-CONFIG = 'config.json'
-FOLDER = 'audio'
-TOKEN = 'NTk2NTgwNzE5MDc0MjEzOTQ0.XR7ncg.jauuWpp_LZtoi6Slg26e_s4dW2I'
-CHANNEL_ID = 528118754224373780
+# Constants
+CONFIG_FOLDER = 'config.json'
+AUDIO_FOLDER = 'audio'
+TOKEN = None
+CHANNEL_ID = None
 
 
 # Bot setup
@@ -14,9 +14,12 @@ bot = commands.Bot(command_prefix='!')
 volume = None
 json_file = None
 
-with open(CONFIG, 'r') as f:
+with open(CONFIG_FOLDER, 'r') as f:
     json_file = json.load(f)
-    volume = json_file['bot']['volume']
+    bot_settings = json_file['bot']
+    volume = bot_settings['volume']
+    TOKEN = bot_settings['token']
+    CHANNEL_ID = bot_settings['channel']
 
 
 async def is_connected(ctx):
@@ -54,7 +57,7 @@ async def play_audio(ctx):
     saved_volume = json_file['bot']['volume']
 
     audio_source = discord.PCMVolumeTransformer(
-        discord.FFmpegPCMAudio(source='{}\\{}.mp3'.format(FOLDER, filename)))
+        discord.FFmpegPCMAudio(source='{}\\{}.mp3'.format(AUDIO_FOLDER, filename)))
     audio_source.volume = saved_volume
 
     if not vc.is_playing():
