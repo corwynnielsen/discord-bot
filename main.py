@@ -231,7 +231,9 @@ async def gtfo(ctx):
 @bot.command()
 async def v(ctx):
 
-    'Bot command to change the volume'
+    '''
+    Bot command to change the volume
+    '''
 
     message = ctx.message.content
     split_message = message.split(' ')
