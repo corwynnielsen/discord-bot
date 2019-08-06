@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
 import json
+import sys
 
 # Constants
 CONFIG_FOLDER = 'config.json'
@@ -43,6 +44,19 @@ async def connect(ctx):
     channel = bot.get_channel(CHANNEL_ID)
     if not await is_connected(ctx):
         await channel.connect()
+
+
+async def disconnect(ctx):
+
+    '''
+    If bot is connected it will disconnect, otherwise a message is sent
+    '''
+
+    connected = await is_connected(ctx)
+    if connected:
+        await bot.voice_clients[0].disconnect()
+    elif not connected and ctx.command.name != 'kill':
+        await ctx.send(content="I'm not in the channel")
 
 
 async def play_audio(ctx):
@@ -221,11 +235,7 @@ async def gtfo(ctx):
     Bot command to make the bot leave the channel
     '''
 
-    connected = await is_connected(ctx)
-    if connected:
-        await bot.voice_clients[0].disconnect()
-    elif not connected:
-        await ctx.send(content="I'm not in the channel")
+    await disconnect(ctx)
 
 
 @bot.command()
@@ -245,6 +255,21 @@ async def v(ctx):
         await ctx.send(content=('Success! Volume set to {}'.format(volume)))
     else:
         await ctx.send(content='Volume not must be between 1 and 100')
+
+
+@bot.command()
+async def kill(ctx):
+    await disconnect(ctx)
+    sys.exit(0)
+
+
+@kill.before_invoke
+async def before_kill(ctx):
+    if not await bot.is_owner(ctx.message.author):
+        await ctx.send(content='Only the owner can kill the bot process')
+        raise commands.NotOwner(
+            message="{} is not the owner".format(ctx.message.author))
+
 
 # run bot
 bot.run(TOKEN)
