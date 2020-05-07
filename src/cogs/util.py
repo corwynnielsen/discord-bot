@@ -5,8 +5,8 @@ from discord.ext import commands
 
 
 class Util(commands.Cog):
-    def __init__(self, bot):
-        self.bot = bot
+    def __init__(self, client):
+        self.client = client
 
     async def disconnect(self, ctx):
 
@@ -41,7 +41,10 @@ class Util(commands.Cog):
 
     @kill.before_invoke
     async def before_kill(self, ctx):
-        if not await self.bot.is_owner(ctx.message.author):
+        if not await self.client.is_owner(ctx.message.author):
             await ctx.send(content='Only the owner can kill the bot process')
             raise commands.NotOwner(
                 message="{} is not the owner".format(ctx.message.author))
+
+def setup(client):
+    client.add_cog(Util(client))

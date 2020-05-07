@@ -1,16 +1,17 @@
-from bot import Bot
-from cogs.audio import Audio
-from cogs.util import Util
-from config_handler import ConfigHandler
+import os
 
-#Instantiate single config handler to be used accross classes
-config = ConfigHandler()
+import discord
+from discord.ext import commands
+
+from config import token
 
 #Add cogs to bot
-wrapper_bot = Bot(config)
-real_bot_instance = wrapper_bot.bot
-real_bot_instance.add_cog(Audio(real_bot_instance, config))
-real_bot_instance.add_cog(Util(real_bot_instance))
+client = commands.Bot(command_prefix='pls ')
+
+for filename in os.listdir('./src/cogs'):
+    if filename.endswith('.py'):
+        client.load_extension(f'cogs.{filename[:-3]}')
 
 if __name__ == '__main__':
-    wrapper_bot.run()
+    client.run(token)
+
