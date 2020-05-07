@@ -1,0 +1,1 @@
+cmd /k "cd C:\Users\corwy\projects\discord_bot & venv\Scripts\activate.bat & python src\main.py"
