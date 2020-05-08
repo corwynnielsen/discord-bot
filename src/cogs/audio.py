@@ -59,6 +59,7 @@ class Audio(commands.Cog):
             filename, ext = splitext(file)
             command_description = command_details[filename]['description']
             bot_command = commands.Command(self.__play_audio, name=filename, help=command_description)
+            bot_command.cog = self
             self.client.add_command(bot_command)
 
     @commands.command()
