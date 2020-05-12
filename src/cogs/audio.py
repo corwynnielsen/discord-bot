@@ -32,7 +32,7 @@ class Audio(commands.Cog):
             bot_command.cog = self
             self.client.add_command(bot_command)
     
-    
+
     @staticmethod
     async def __play_audio(self, ctx):
 
@@ -50,7 +50,7 @@ class Audio(commands.Cog):
         if not vc.is_playing():
             vc.play(audio_source)
         else:
-            await self.__play_audio(ctx)
+            await Audio.__play_audio(self, ctx)
 
 
     @commands.command()
