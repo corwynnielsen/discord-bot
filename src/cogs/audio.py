@@ -16,6 +16,22 @@ class Audio(commands.Cog):
         self.client = client
         self.__setup_audio_commands()
 
+
+    def __setup_audio_commands(self):
+
+        '''
+        Procedurally create audio commands based on filename
+        '''
+
+        audio_files = [f for f in listdir(AUDIO_FOLDER) if isfile(join(AUDIO_FOLDER, f))]
+        command_details = bot_settings['commands']
+        for file in audio_files:
+            filename, ext = splitext(file)
+            command_description = command_details[filename]['description']
+            bot_command = commands.Command(Audio.__play_audio, name=filename, help=command_description)
+            bot_command.cog = self
+            self.client.add_command(bot_command)
+    
     
     @staticmethod
     async def __play_audio(self, ctx):
@@ -36,21 +52,6 @@ class Audio(commands.Cog):
         else:
             await self.__play_audio(ctx)
 
-
-    def __setup_audio_commands(self):
-
-        '''
-        Procedurally create audio commands based on filename
-        '''
-
-        audio_files = [f for f in listdir(AUDIO_FOLDER) if isfile(join(AUDIO_FOLDER, f))]
-        command_details = bot_settings['commands']
-        for file in audio_files:
-            filename, ext = splitext(file)
-            command_description = command_details[filename]['description']
-            bot_command = commands.Command(Audio.__play_audio, name=filename, help=command_description)
-            bot_command.cog = self
-            self.client.add_command(bot_command)
 
     @commands.command()
     async def v(self, ctx):
