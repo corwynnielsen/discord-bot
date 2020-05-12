@@ -14,11 +14,10 @@ class Util(commands.Cog):
         If bot is connected it will disconnect, otherwise a message is sent
         '''
 
-        if ctx.voice_client:
-            await ctx.guild.voice_client.disconnect()
-        elif ctx.command.name != 'kill':
+        if ctx.voice_client is None and ctx.command.name != 'kill':
             await ctx.send(content="I'm not in the channel")
 
+        await ctx.voice_client.disconnect()
 
     @commands.command()
     async def gtfo(self, ctx):

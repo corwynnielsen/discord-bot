@@ -20,14 +20,18 @@ class Audio(commands.Cog):
     async def __connect(self, ctx):
 
         '''
-        If bot is not already connected to the channel, connect to the channel
+        If bot is not already connected to the channel, connect to message author's channel
         '''
 
-        channel = self.client.get_channel(channel_id)
-        if not ctx.voice_client:
-            await channel.connect()
+        if ctx.voice_client is None:
+            if ctx.author.voice:
+                await ctx.author.voice.channel.connect()
+            else:
+                await ctx.send("You are not connected to a voice channel.")
+                raise commands.CommandError("Author not connected to a voice channel.")
 
-
+    
+    @staticmethod
     async def __play_audio(self, ctx):
 
         '''
@@ -45,6 +49,8 @@ class Audio(commands.Cog):
 
         if not vc.is_playing():
             vc.play(audio_source)
+        else:
+            await self.__play_audio(ctx)
 
 
     def __setup_audio_commands(self):
@@ -58,7 +64,7 @@ class Audio(commands.Cog):
         for file in audio_files:
             filename, ext = splitext(file)
             command_description = command_details[filename]['description']
-            bot_command = commands.Command(self.__play_audio, name=filename, help=command_description)
+            bot_command = commands.Command(Audio.__play_audio, name=filename, help=command_description)
             bot_command.cog = self
             self.client.add_command(bot_command)
 

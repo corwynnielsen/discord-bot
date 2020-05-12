@@ -7,7 +7,7 @@ config.json
 
 #Environment
 venv
-discord.log
+logs
 
 #Assets
 audio
