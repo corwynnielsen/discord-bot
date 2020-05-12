@@ -8,27 +8,13 @@ from discord.ext import commands
 
 path.append("..\\")
 from constants import AUDIO_FOLDER
-from config import bot_settings, channel_id, volume, write_bot_config
+from config import bot_settings, get_config_value, write_bot_config
 
 
 class Audio(commands.Cog):
     def __init__(self, client):
         self.client = client
         self.__setup_audio_commands()
-
-        
-    async def __connect(self, ctx):
-
-        '''
-        If bot is not already connected to the channel, connect to message author's channel
-        '''
-
-        if ctx.voice_client is None:
-            if ctx.author.voice:
-                await ctx.author.voice.channel.connect()
-            else:
-                await ctx.send("You are not connected to a voice channel.")
-                raise commands.CommandError("Author not connected to a voice channel.")
 
     
     @staticmethod
@@ -38,14 +24,12 @@ class Audio(commands.Cog):
         Generic function to play an audio file specified by the context object
         '''
 
-        await self.__connect(ctx)
+        await self.connect(ctx)
         vc = ctx.voice_client
         filename = ctx.command.name
-        saved_volume = volume
 
-        audio_source = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio(
-            source='{}\\{}.mp3'.format(AUDIO_FOLDER, filename)))
-        audio_source.volume = saved_volume
+        audio_source = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio(source='{}\\{}.mp3'.format(AUDIO_FOLDER, filename)))
+        audio_source.volume = get_config_value('volume')
 
         if not vc.is_playing():
             vc.play(audio_source)
@@ -76,13 +60,30 @@ class Audio(commands.Cog):
         '''
         
         message = ctx.message.content
+        volume_idx = 2
         split_message = message.split(' ')
-        volume = int(split_message[1])
-        if (split_message[1].isdigit() and volume >= 0 and volume <= 100):
+        volume = int(split_message[volume_idx])
+        if (split_message[volume_idx].isdigit() and volume >= 0 and volume <= 100):
             write_bot_config('volume', volume / 100)
             await ctx.send(content=('Success! Volume set to {}'.format(volume)))
         else:
             await ctx.send(content='Volume not must be between 1 and 100')
+
+
+    @v.before_invoke
+    async def connect(self, ctx):
+
+        '''
+        If bot is not already connected to the channel, connect to message author's channel
+        '''
+
+        if ctx.voice_client is None:
+            if ctx.author.voice:
+                await ctx.author.voice.channel.connect()
+            else:
+                await ctx.send("You are not connected to a voice channel.")
+                raise commands.CommandError("Author not connected to a voice channel.")
+
 
 def setup(client):
     client.add_cog(Audio(client))

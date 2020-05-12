@@ -45,5 +45,6 @@ class Util(commands.Cog):
             raise commands.NotOwner(
                 message="{} is not the owner".format(ctx.message.author))
 
+
 def setup(client):
     client.add_cog(Util(client))
